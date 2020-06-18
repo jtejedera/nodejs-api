@@ -7,7 +7,7 @@ Simple Node.JS Project
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Start the API
 ```
 npm start
 ```
