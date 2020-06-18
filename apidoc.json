@@ -1,0 +1,7 @@
+{
+    "name": "Node.js code assessment",
+    "version": "0.1.0",
+    "description": "API Documentation",
+    "title": "Node.js code assessment API endpoints.",
+    "url" : "http://localhost:3000/api"
+  }
