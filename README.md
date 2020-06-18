@@ -2,6 +2,12 @@
 
 Simple Node.JS Project
 
+## API Documentation
+Open the API documentation Index file.
+```
+./apidoc/index.html
+```
+
 ## Project setup
 ```
 npm install
