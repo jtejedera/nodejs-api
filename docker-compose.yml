@@ -1,0 +1,11 @@
+version: '2'  
+
+services:  
+    node: 
+        image: node_api
+        ports: 
+            - 3000:3000
+    redis: 
+        image: redis:latest
+        ports: 
+            - 6379:6379
