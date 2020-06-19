@@ -175,7 +175,7 @@ define({ "api": [
             "type": "ObjectId",
             "optional": false,
             "field": "userId",
-            "description": "<p>Users unique ID.</p>"
+            "description": "<p>Users unique ID or user Name in the next format: /user/id=0178914c-548b-4a4c-b918-47d6a391530c or /user/name=Whitley.</p>"
           }
         ]
       }

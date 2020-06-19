@@ -3,7 +3,7 @@
  * @apiName userData
  * @apiGroup User
  *
- * @apiParam {ObjectId} userId Users unique ID.
+ * @apiParam {ObjectId} userId Users unique ID or user Name in the next format: /user/id=0178914c-548b-4a4c-b918-47d6a391530c or /user/name=Whitley.
  *
  * @apiSuccess {Boolean} success Status of the operation.
  * @apiSuccess {Object} data  Data of the query.
