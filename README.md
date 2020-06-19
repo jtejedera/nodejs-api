@@ -1,6 +1,6 @@
 # NODE.JS API #
 
-Simple Node.JS Project. It include tests, generatid documentation using apiDoc (https://apidocjs.com/), Docker file and Docker Compose.
+Simple Node.JS Project. It include tests, generated documentation using apiDoc (https://apidocjs.com/), Docker file and Docker Compose.
 
 ## API Documentation
 Open the API documentation Index file.
