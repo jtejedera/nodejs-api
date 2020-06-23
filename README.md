@@ -28,7 +28,7 @@ npm run test-dev
 ## Docker
 Build the API image
 ```
-docker image build -t node_api -
+docker image build -t node_api .
 ```
 
 Then you can run docker-compose up
