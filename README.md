@@ -25,7 +25,7 @@ npm start
 npm run test-dev
 ```
 
-### Docker
+## Docker
 Build the API image
 ```
 docker image build -t node_api -
