@@ -2,6 +2,8 @@
 
 Simple Node.JS Project. It include tests, generated documentation using apiDoc (https://apidocjs.com/), Docker file and Docker Compose.
 
+IMPORTANT: You need a Redis server running. Default config in ./config/config.js.
+
 ## API Documentation
 Open the API documentation Index file.
 ```
