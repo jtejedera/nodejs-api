@@ -43,4 +43,3 @@ docker-compose up
 ```
 npm run test-dev
 ```
-![Screenshot](tests.PNG)
