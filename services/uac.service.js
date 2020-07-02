@@ -3,17 +3,12 @@ import axios from 'axios';
 
 const checkRole = async user => {
   try {
-    return await axios.get(config.clientList)
-    .then(response => {     
-      const userRole = response.data.clients.find( x => x.id === user).role
-      return userRole
-    })
-    .catch(error => {
-      return { success: false, data: {}, message: `Error: ${error}`}
-    });    
+    const roleRequest = await axios.get(config.clientList)
+    const userRole = roleRequest.data.clients.find( x => x.id === user).role
+    return userRole 
   }
   catch (error){
-    return { success: false, data: {}, message: `Error: ${error}`}
+    return { success: false, data: {}, message: `${error}`}
   }
 }
 

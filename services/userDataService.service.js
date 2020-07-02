@@ -9,21 +9,18 @@ const getUserData = async user => {
   }
 
   const value = user.split('=')[1];
-  const redisresult = await redisMethods.getClient(value);
   try {
+    const redisresult = await redisMethods.getClient(value);
     if(redisresult.data){
       const userDetails = JSON.parse(redisresult.data)
+      
       return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}
     }else{
-      return await axios.get(config.clientList)
-      .then(response => {     
-        const userDetails = response.data.clients.find( x => x[property] === value)
-        redisMethods.setClient(value,userDetails)
-        return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}
-      })
-      .catch(error => {
-        return { success: false, data: {}, message: `Error: ${error}`}
-      });  
+      const userRequest = await axios.get(config.clientList)    
+      const userDetails = userRequest.data.clients.find( x => x[property] === value)  
+      await redisMethods.setClient(value,userDetails)
+
+      return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}      
     }
   
   }
