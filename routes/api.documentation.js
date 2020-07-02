@@ -1,6 +1,10 @@
 /**
  * @api {get} /user/:userId Get User Data
  * @apiHeader {String} x-access-token ID of the user.
+ * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "x-access-token": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb"
+ *     }
  * @apiName userData
  * @apiGroup User
  *
@@ -49,6 +53,10 @@
 /**
  * @api {get} /policyList/:userId Get Policy List of a given user ID
  * @apiHeader {String} x-access-token ID of the user.
+  * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "x-access-token": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb"
+ *     } 
  * @apiName policyData
  * @apiGroup Policies
  *
@@ -105,6 +113,10 @@
 /**
  * @api {get} /policyUser/:policyNumber Get User details of a given Policy Number
  * @apiHeader {String} x-access-token ID of the user. 
+ * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "x-access-token": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb"
+ *     } 
  * @apiName policyData
  * @apiGroup Policies
  *

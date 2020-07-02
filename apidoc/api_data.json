@@ -14,7 +14,14 @@
             "description": "<p>ID of the user.</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"x-access-token\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "name": "policyData",
     "group": "Policies",
@@ -108,7 +115,14 @@
             "description": "<p>ID of the user.</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"x-access-token\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "name": "policyData",
     "group": "Policies",
@@ -202,7 +216,14 @@
             "description": "<p>ID of the user.</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"x-access-token\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "name": "userData",
     "group": "User",
