@@ -1,7 +1,4 @@
-//import { auth } from '../controllers';
-import { userData } from '../controllers/index.js';
-import { policyData } from '../controllers/index.js';
-import { uac } from '../controllers/index.js';
+import { userData, policyData, uac } from '../controllers/index.js';
 
 module.exports = (express) => {
 

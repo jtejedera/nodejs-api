@@ -21,13 +21,12 @@ const setClient = async (clientId, userData) => {
   }
 
 const getClient = clientId => {
-return new Promise((resolve,reject) => {
-    client.get(clientId, (error, reply) => {
-        if(error) reject({success:false, data: error})
-        resolve({success:true, data: reply});
-    })   
-})      
-
+  return new Promise((resolve,reject) => {
+      client.get(clientId, (error, reply) => {
+          if(error) reject({success:false, data: error})
+          resolve({success:true, data: reply});
+      })   
+  })      
 }  
   
   export default {
