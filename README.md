@@ -8,7 +8,7 @@ Simple Node.JS Project. It include tests, generated documentation using apiDoc (
 
 ## NOTES 
 * I added Babel to use `import` and avoid to add `-experimental-modules` flag.
-* Send the request to the API using the header `x-access-token` with value of a user ID. It simulates a Token and it's validated in the UAC controller.
+* Send the request to the API using the header `x-access-token` with value of a user ID. It simulates a Token and it will be validated in the API UAC controller.
 
 ## API Documentation
 Open the API documentation Index file.
@@ -27,7 +27,8 @@ npm start
 ```
 
 ### Run Tests
-Check 1 - HTTP endpoints and 2 - Services
+1. HTTP endpoints
+2. Services
 ```
 npm run test-dev
 ```
