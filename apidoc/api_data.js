@@ -3,6 +3,19 @@ define({ "api": [
     "type": "get",
     "url": "/policyList/:userId",
     "title": "Get Policy List of a given user ID",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>ID of the user.</p>"
+          }
+        ]
+      }
+    },
     "name": "policyData",
     "group": "Policies",
     "parameter": {
@@ -84,6 +97,19 @@ define({ "api": [
     "type": "get",
     "url": "/policyUser/:policyNumber",
     "title": "Get User details of a given Policy Number",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>ID of the user.</p>"
+          }
+        ]
+      }
+    },
     "name": "policyData",
     "group": "Policies",
     "parameter": {
@@ -165,6 +191,19 @@ define({ "api": [
     "type": "get",
     "url": "/user/:userId",
     "title": "Get User Data",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>ID of the user.</p>"
+          }
+        ]
+      }
+    },
     "name": "userData",
     "group": "User",
     "parameter": {
