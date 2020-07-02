@@ -26,14 +26,6 @@ npm install
 npm start
 ```
 
-### Run Tests
-1. HTTP endpoints
-2. Services
-```
-npm run test-dev
-```
-![Screenshot](tests.PNG)
-
 ## Docker
 Build the API image
 ```
@@ -44,3 +36,11 @@ Then you can run docker-compose up
 ```
 docker-compose up
 ```
+
+### Run Tests
+1. HTTP endpoints
+2. Services
+```
+npm run test-dev
+```
+![Screenshot](tests.PNG)
