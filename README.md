@@ -32,7 +32,7 @@ npm start
 ```
 npm run test-dev
 ```
-![Screenshot](tests.png)
+![Screenshot](tests.PNG)
 
 ## Docker
 Build the API image
