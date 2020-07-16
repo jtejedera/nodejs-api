@@ -1,8 +1,8 @@
 define({ "api": [
   {
-    "type": "get",
-    "url": "/policyList/:userId",
-    "title": "Get Policy List of a given user ID",
+    "type": "post",
+    "url": "/login",
+    "title": "Get Token",
     "header": {
       "fields": {
         "Header": [
@@ -10,30 +10,30 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
-            "description": "<p>ID of the user.</p>"
+            "field": "authentication",
+            "description": "<p>Bearer Token</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Header-Example:",
-          "content": "{\n  \"x-access-token\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n}",
+          "content": "{\n  \"authentication\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEyOTgsImV4cCI6MTU5NDkwMjA5OH0.DlyVa8cAcrb5N8HgZ-1eakyChNJ9zGN6vRgttAnS9Xs\"\n}",
           "type": "json"
         }
       ]
     },
-    "name": "policyData",
-    "group": "Policies",
+    "name": "Login",
+    "group": "Auth",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "ObjectId",
+            "type": "username",
             "optional": false,
-            "field": "userId",
-            "description": "<p>Users unique ID.</p>"
+            "field": "String",
+            "description": "<p>Must be the email of the user.</p>"
           }
         ]
       }
@@ -43,36 +43,36 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Boolean",
+            "type": "String",
             "optional": false,
-            "field": "success",
-            "description": "<p>Status of the operation.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "data",
-            "description": "<p>Array with all the policies related to given user ID.</p>"
+            "field": "Type",
+            "description": "<p>Type of the Token.</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Message",
-            "description": "<p>Message of the operation.</p>"
+            "field": "Token",
+            "description": "<p>JWT Token.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "expires_in",
+            "description": "<p>Expiration date.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": [\n          {\n              \"id\": \"7b624ed3-00d5-4c1b-9ab8-c265067ef58b\",\n              \"amountInsured\": 399.89,\n              \"email\": \"inesblankenship@quotezart.com\",\n              \"inceptionDate\": \"2015-07-06T06:55:49Z\",\n              \"installmentPayment\": true,\n              \"clientId\": \"a0ece5db-cd14-4f21-812f-966633e7be86\"\n          },\n          {\n              \"id\": \"6f514ec4-1726-4628-974d-20afe4da130c\",\n              \"amountInsured\": 697.04,\n              \"email\": \"inesblankenship@quotezart.com\",\n              \"inceptionDate\": \"2014-09-12T12:10:23Z\",\n              \"installmentPayment\": false,\n              \"clientId\": \"a0ece5db-cd14-4f21-812f-966633e7be86\"\n          }\n      ],\n    \"message\": \"Policies details.\"\n}",
+          "content": "HTTP/1.1 200 OK\n  {\n      \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEwMjUsImV4cCI6MTU5NDkwMTgyNX0.KOvfkcGZc2KPqp0X9Kdft4jHpN1kwqvvz2aym4qk8xc\",\n      \"type\": \"Bearer\",\n      \"expires_in\": 1594901825\n  }",
           "type": "json"
         },
         {
           "title": "Success-Response No Data:",
-          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {},\n    \"message\": \"No policies found\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": false,\n    \"data\": {},\n    \"message\": \"Incorrect login.\"\n}",
           "type": "json"
         }
       ]
@@ -98,12 +98,13 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/api.documentation.js",
-    "groupTitle": "Policies"
+    "groupTitle": "Auth"
   },
   {
     "type": "get",
-    "url": "/policyUser/:policyNumber",
-    "title": "Get User details of a given Policy Number",
+    "url": "/clients",
+    "title": "Get the list of clients details paginated and limited to 10 elements by default.",
+    "description": "<p>This API endpoint access also an optional filter query to filter by client name. Can be accessed by client with role user (it will retrieve its own client details as only element of the list) and admin (it will retrieve all the clients list).</p>",
     "header": {
       "fields": {
         "Header": [
@@ -111,131 +112,37 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
-            "description": "<p>ID of the user.</p>"
+            "field": "authentication",
+            "description": "<p>Bearer Token.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Header-Example:",
-          "content": "{\n  \"x-access-token\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n}",
+          "content": "{\n  \"authentication\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEwMjUsImV4cCI6MTU5NDkwMTgyNX0.KOvfkcGZc2KPqp0X9Kdft4jHpN1kwqvvz2aym4qk8xc\"\n}",
           "type": "json"
         }
       ]
     },
-    "name": "policyData",
-    "group": "Policies",
+    "name": "clientData",
+    "group": "Client",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "ObjectId",
+            "type": "number",
             "optional": false,
-            "field": "policyNumber",
-            "description": "<p>Policy unique ID.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Boolean",
-            "optional": false,
-            "field": "success",
-            "description": "<p>Status of the operation.</p>"
+            "field": "limit",
+            "description": "<p>Limit the numer of results.</p>"
           },
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "data",
-            "description": "<p>Array with all the policies related to given user ID.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Message",
-            "description": "<p>Message of the operation.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"a3b8d425-2b60-4ad7-becc-bedf2ef860bd\",\n        \"name\": \"Barnett\",\n        \"email\": \"barnettblankenship@quotezart.com\",\n        \"role\": \"user\"\n    },\n    \"message\": \"User details of policy 5d6b141e-0d22-4a84-abdb-6200ddaad7d0\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Success-Response No Data:",
-          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {},\n    \"message\": \"No policy found\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "unexpectedError",
-            "description": "<p>Unexpected error.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Unexpected Error\n{\n      \"success\": false,\n      \"data\": {},\n      \"message\": \"Error Message\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "routes/api.documentation.js",
-    "groupTitle": "Policies"
-  },
-  {
-    "type": "get",
-    "url": "/user/:userId",
-    "title": "Get User Data",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>ID of the user.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Header-Example:",
-          "content": "{\n  \"x-access-token\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "name": "userData",
-    "group": "User",
-    "parameter": {
-      "fields": {
-        "Parameter": [
           {
             "group": "Parameter",
-            "type": "ObjectId",
+            "type": "number",
             "optional": false,
-            "field": "userId",
-            "description": "<p>Users unique ID or user Name in the next format: /user/id=0178914c-548b-4a4c-b918-47d6a391530c or /user/name=Whitley.</p>"
+            "field": "page",
+            "description": "<p>Select the results page.</p>"
           }
         ]
       }
@@ -287,6 +194,34 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "policies",
+            "description": "<p>Array list of client policies.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "policies.id",
+            "description": "<p>Array list of client policies.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "policies.amountInsured",
+            "description": "<p>Policy amountInsured.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "policies.inceptionDate",
+            "description": "<p>Policy inceptionDate.</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "Message",
@@ -297,7 +232,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"a3b8d425-2b60-4ad7-becc-bedf2ef860bd\",\n        \"name\": \"Barnett\",\n        \"email\": \"barnettblankenship@quotezart.com\",\n        \"role\": \"user\"\n    },\n    \"message\": \"User details.\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": [\n          {\n              \"id\": \"a0ece5db-cd14-4f21-812f-966633e7be86\",\n              \"name\": \"Britney\",\n              \"email\": \"britneyblankenship@quotezart.com\",\n              \"role\": \"admin\",\n              \"policies\": [\n                  {\n                      \"id\": \"7b624ed3-00d5-4c1b-9ab8-c265067ef58b\",\n                      \"amountInsured\": \"399.89\",\n                      \"inceptionDate\": \"2015-07-06T06:55:49Z\"\n                  },\n              ]\n         }\n    \"message\": \"User details.\"\n}",
           "type": "json"
         },
         {
@@ -328,6 +263,596 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/api.documentation.js",
-    "groupTitle": "User"
+    "groupTitle": "Client"
+  },
+  {
+    "type": "get",
+    "url": "/clients/:id",
+    "title": "Get the client's details.",
+    "description": "<p>Can be accessed by client with role user (it will retrieve its own client details) and admin (it will retrieve any client details). Can be use id or name.</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authentication",
+            "description": "<p>Bearer Token.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"authentication\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEwMjUsImV4cCI6MTU5NDkwMTgyNX0.KOvfkcGZc2KPqp0X9Kdft4jHpN1kwqvvz2aym4qk8xc\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "name": "clientData",
+    "group": "Client",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the client (id=1470c601-6833-48a4-85b4-ddab9c045916)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Or the name of the client (name=Barnett)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Status of the operation.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Data of the query.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "data.id",
+            "description": "<p>ID of the client.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.name",
+            "description": "<p>Name of the client.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.email",
+            "description": "<p>Email of the client.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.role",
+            "description": "<p>Role of the client.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "policies",
+            "description": "<p>Array list of client policies.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "policies.id",
+            "description": "<p>Array list of client policies.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "policies.amountInsured",
+            "description": "<p>Policy amountInsured.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "policies.inceptionDate",
+            "description": "<p>Policy inceptionDate.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Message",
+            "description": "<p>Message of the operation.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": [\n          {\n              \"id\": \"a0ece5db-cd14-4f21-812f-966633e7be86\",\n              \"name\": \"Britney\",\n              \"email\": \"britneyblankenship@quotezart.com\",\n              \"role\": \"admin\",\n              \"policies\": [\n                  {\n                      \"id\": \"7b624ed3-00d5-4c1b-9ab8-c265067ef58b\",\n                      \"amountInsured\": \"399.89\",\n                      \"inceptionDate\": \"2015-07-06T06:55:49Z\"\n                  },\n              ]\n         }\n    \"message\": \"User details.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Success-Response No Data:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {},\n    \"message\": \"No client found\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "unexpectedError",
+            "description": "<p>Unexpected error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Unexpected Error\n{\n      \"success\": false,\n      \"data\": {},\n      \"message\": \"Error Message\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api.documentation.js",
+    "groupTitle": "Client"
+  },
+  {
+    "type": "get",
+    "url": "/clients/:id/policies",
+    "title": "Get the client's policies.",
+    "description": "<p>Can be accessed by client with role user (it will retrieve its own client policy list) and admin (it will retrieve any client policy list)</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authentication",
+            "description": "<p>Bearer Token.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"authentication\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEwMjUsImV4cCI6MTU5NDkwMTgyNX0.KOvfkcGZc2KPqp0X9Kdft4jHpN1kwqvvz2aym4qk8xc\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "name": "clientData",
+    "group": "Client",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the client (id=1470c601-6833-48a4-85b4-ddab9c045916)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Status of the operation.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Client policies array.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "data.id",
+            "description": "<p>ID of the policy.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.amountInsured",
+            "description": "<p>Policy amountInsured.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.email",
+            "description": "<p>Client email.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.inceptionDate",
+            "description": "<p>Policy inceptionDate.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.installmentPayment",
+            "description": "<p>Policy installmentPayment.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.clientId",
+            "description": "<p>Policy client ID.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Message",
+            "description": "<p>Message of the operation.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": [\n          {\n              \"id\": \"64cceef9-3a01-49ae-a23b-3761b604800b\",\n              \"amountInsured\": \"1825.89\",\n              \"email\": \"inesblankenship@quotezart.com\",\n              \"inceptionDate\": \"2016-06-01T03:33:32Z\",\n              \"installmentPayment\": true,\n              \"clientId\": \"e8fd159b-57c4-4d36-9bd7-a59ca13057bb\"\n          }\n      ]\n    \"message\": \"Policy details.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Success-Response No Data:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {},\n    \"message\": \"No policies found\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "unexpectedError",
+            "description": "<p>Unexpected error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Unexpected Error\n{\n      \"success\": false,\n      \"data\": {},\n      \"message\": \"Error Message\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api.documentation.js",
+    "groupTitle": "Client"
+  },
+  {
+    "type": "get",
+    "url": "/policies",
+    "title": "Get the list of policies' client paginated and limited to 10 elements by default.",
+    "description": "<p>Can be accessed by client with role user (it will retrieve its own policies) and admin (it will retrieve all the policies)</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authentication",
+            "description": "<p>Bearer Token.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"authentication\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEwMjUsImV4cCI6MTU5NDkwMTgyNX0.KOvfkcGZc2KPqp0X9Kdft4jHpN1kwqvvz2aym4qk8xc\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "name": "policyData",
+    "group": "Policies",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Limit the numer of results.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Select the results page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Status of the operation.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Client policies array.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "data.id",
+            "description": "<p>ID of the policy.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.amountInsured",
+            "description": "<p>Policy amountInsured.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.email",
+            "description": "<p>Client email.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.inceptionDate",
+            "description": "<p>Policy inceptionDate.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.installmentPayment",
+            "description": "<p>Policy installmentPayment.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Message",
+            "description": "<p>Message of the operation.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": [\n          {\n              \"id\": \"64cceef9-3a01-49ae-a23b-3761b604800b\",\n              \"amountInsured\": \"1825.89\",\n              \"email\": \"inesblankenship@quotezart.com\",\n              \"inceptionDate\": \"2016-06-01T03:33:32Z\",\n              \"installmentPayment\": true,\n          }\n      ]\n    \"message\": \"Policy details of user ID 64cceef9-3a01-49ae-a23b-3761b604800b\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Success-Response No Data:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {},\n    \"message\": \"No policies found\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "unexpectedError",
+            "description": "<p>Unexpected error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Unexpected Error\n{\n      \"success\": false,\n      \"data\": {},\n      \"message\": \"Error Message\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api.documentation.js",
+    "groupTitle": "Policies"
+  },
+  {
+    "type": "get",
+    "url": "/policies/:id",
+    "title": "Get the details of a policy's client.",
+    "description": "<p>Can be accessed by client with role user (it will retrieve its own policy) and admin (it will retrieve all the policies)</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authentication",
+            "description": "<p>Bearer Token.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"authentication\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJyaXRuZXlibGFua2Vuc2hpcEBxdW90ZXphcnQuY29tIiwiaWQiOiJhMGVjZTVkYi1jZDE0LTRmMjEtODEyZi05NjY2MzNlN2JlODYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1OTQ4OTEwMjUsImV4cCI6MTU5NDkwMTgyNX0.KOvfkcGZc2KPqp0X9Kdft4jHpN1kwqvvz2aym4qk8xc\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "name": "policyData",
+    "group": "Policies",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectID",
+            "optional": false,
+            "field": "ID",
+            "description": "<p>of the policy.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Status of the operation.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Client policies array.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "data.id",
+            "description": "<p>ID of the policy.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.amountInsured",
+            "description": "<p>Policy amountInsured.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.email",
+            "description": "<p>Client email.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.inceptionDate",
+            "description": "<p>Policy inceptionDate.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "data.installmentPayment",
+            "description": "<p>Policy installmentPayment.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Message",
+            "description": "<p>Message of the operation.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": [\n          {\n              \"id\": \"64cceef9-3a01-49ae-a23b-3761b604800b\",\n              \"amountInsured\": \"1825.89\",\n              \"email\": \"inesblankenship@quotezart.com\",\n              \"inceptionDate\": \"2016-06-01T03:33:32Z\",\n              \"installmentPayment\": true,\n          }\n      ]\n    \"message\": \"Policy details\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Success-Response No Data:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"success\": true,\n    \"data\": {},\n    \"message\": \"No policies found\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "unexpectedError",
+            "description": "<p>Unexpected error.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Unexpected Error\n{\n      \"success\": false,\n      \"data\": {},\n      \"message\": \"Error Message\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api.documentation.js",
+    "groupTitle": "Policies"
   }
 ] });

@@ -29,9 +29,8 @@ const getUserData = async req => {
       return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}
     }
   }else{
-    if(req.reqUser.role != 'admin') return { success: false, data: {}, message: `Unable to access to the resource.`}
-
     try {
+      if(!policyList.data.length) return { success: true, data: {}, message: `No data found.`}
       const userlist = await request.requestQuery('clients',req.session.token)
       let formatList  = await formatResult(false,userlist,policyList,req)
       return { success: true, data: formatList?formatList:{}, message: formatList?`User details.`:`No data found.`}

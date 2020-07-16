@@ -38,3 +38,5 @@ app.get('*', (req, res) => {
 
 app.listen(config.port);
 console.log(`Server started: ${config.port}`);
+
+module.exports = app

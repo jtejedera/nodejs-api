@@ -38,7 +38,7 @@ class auth{
         id: this.id,
         role: this.role
       },(config.API_KEY), {
-        expiresIn: '3h'
+        expiresIn: '1h'
       });
       return token
     }

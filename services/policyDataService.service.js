@@ -25,9 +25,9 @@ const policyId = async req => {
   try {
     let policyList = await request.requestQuery('policies',req.session.token)
     if(req.reqUser.role != 'admin') {
-      policyList.data =  policyList.data.find( x => x.clientId === req.reqUser.id && req.params.id === x.id)
+      policyList.data =  policyList.data.filter( x => x.clientId === req.reqUser.id && req.params.id === x.id)
     }else{
-      policyList.data = policyList.data.find( x => x.id === req.params.id)
+      policyList.data = policyList.data.filter( x => x.id === req.params.id)
     }
 
     return { success: true, data: policyList.data?policyList.data:{}, message: policyList.data?`Policies details.`:`No policies found.`}
@@ -56,9 +56,9 @@ const policyUser = async req => {
       policyData = await formatResult(policyList.data.filter(p => p.clienId === req.reqUser.id),req)
     }
 
-    if(!policyData.length) return { success: false, data: {}, message: `No policy found`}
+    if(!policyData.length) return { success: true, data: {}, message: `No policy found`}
 
-    return { success: true, data: policyData, message: `Policy details of user ID ${req.reqUser.id}` }
+    return { success: true, data: policyData, message: `Policy details` }
   }
   catch (error){
     const policyList =  await request.errorHandler('policies',error, req)
@@ -70,9 +70,9 @@ const policyUser = async req => {
       policyData = await formatResult(policyList.data.filter(p => p.clienId === req.reqUser.id),req)
     }
 
-    if(!policyData) return { success: false, data: {}, message: `No policy found`}
+    if(!policyData) return { success: true, data: {}, message: `No policy found`}
 
-    return { success: true, data: policyData, message: `Policy details of user ID ${value}` }    
+    return { success: true, data: policyData, message: `Policy details` }    
   }
 }
 
