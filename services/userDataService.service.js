@@ -1,31 +1,89 @@
-import config from '../config/config.js';
-import redisMethods from '../utils/redisFunctions.js';
-import axios from 'axios';
+import request from '../utils/requests'
+import utils from '../utils/pagination'
+import policyDataService from './policyDataService.service';
 
-const getUserData = async user => {
-  const property = user.split('=')[0];
-  if (property !== 'id' && property !== 'name'){
-    return { success: false, data: {}, message: `Incorrect filter criteria.`}
-  }
+const getUserData = async req => {
+  const policyList = await policyDataService.policyList(req)
 
-  const value = user.split('=')[1];
-  try {
-    const redisresult = await redisMethods.getClient(value);
-    if(redisresult.data){
-      const userDetails = JSON.parse(redisresult.data)
-      
-      return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}
-    }else{
-      const userRequest = await axios.get(config.clientList)    
-      const userDetails = userRequest.data.clients.find( x => x[property] === value)  
-      await redisMethods.setClient(value,userDetails)
-
-      return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}      
+  if(req.params.id){
+    const property = req.params.id.split('=')[0];
+    if (property !== 'id' && property !== 'name'){
+      return { success: false, data: {}, message: `Incorrect filter criteria.`}
     }
-  
+    const value = req.params.id.split('=')[1];
+
+    try {   
+      const userlist = await request.requestQuery('clients',req.session.token)
+      const userDetails = await findUser(value,property,userlist)
+      
+      if(userDetails.id != req.reqUser.id && req.reqUser.role != 'admin') return { success: false, data: {}, message: `Unable to access to the resource.`}
+      if(userDetails && policyList.data.length) userDetails.policies = await formatResult(true,userDetails,policyList)
+      return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}
+    }
+    catch (error){
+      const userlist =  await request.errorHandler('clients',error, req)
+      const userDetails = await findUser(value,property,userlist)  
+
+      if(userDetails.id != req.reqUser.id && req.reqUser.role != 'admin') return { success: false, data: {}, message: `Unable to access to the resource.`}
+      if(userDetails) userDetails.policies = await formatResult(true,userDetails,policyList)      
+      return { success: true, data: userDetails?userDetails:{}, message: userDetails?`User details.`:`No user found.`}
+    }
+  }else{
+    if(req.reqUser.role != 'admin') return { success: false, data: {}, message: `Unable to access to the resource.`}
+
+    try {
+      const userlist = await request.requestQuery('clients',req.session.token)
+      let formatList  = await formatResult(false,userlist,policyList,req)
+      return { success: true, data: formatList?formatList:{}, message: formatList?`User details.`:`No data found.`}
+    }
+    catch (error){
+      const userlist =  await request.errorHandler('clients',error, req)
+      let formatList  = await formatResult(false,userlist,policyList,req)
+      return { success: true, data: formatList?formatList:{}, message: formatList?`User details.`:`No data found.`}      
+    }    
   }
-  catch (error){
-    return { success: false, data: {}, message: `Error: ${error}`}
+}
+
+const findUser = async (userToFind,property,userList) => {
+  return userList.data.find( x => x[property] === userToFind)
+}
+
+
+const formatResult = async (single,userDetails,policyList,req) => {
+  if(single){
+    const userPolicies = policyList.data.filter(p => p.clientId === userDetails.id)
+    const formatPolicies = userPolicies.map(x => {return {
+      id: x.id,
+      amountInsured: x.amountInsured,
+      inceptionDate: x.inceptionDate
+    }})
+    
+    return formatPolicies
+  }else{
+    let allClientPolicies = []
+    userDetails.data.forEach(c => {
+      allClientPolicies.push({
+      id: c.id,
+      name: c.name,
+      email: c.email,
+      role: c.role,
+      policies: policyList.data.filter(p => p.clientId === c.id)
+                .map(x => {return {
+                  id: x.id,
+                  amountInsured: x.amountInsured,
+                  inceptionDate: x.inceptionDate
+                }})
+      })
+    })
+
+    if(req.query){
+      const {page,limit} = await utils.pagination(req.query.page, req.query.limit)
+      allClientPolicies = allClientPolicies.slice(page,limit)
+    }else{
+      allClientPolicies = allClientPolicies.slice(0,10)
+    }
+
+    return allClientPolicies
   }
 }
 
